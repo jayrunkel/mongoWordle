@@ -22,7 +22,7 @@ exports = async function({ query, headers, body}, response) {
 
     // Querying a mongodb service:
      const docs = await context.services.get("mongodb-atlas").db("dbname").collection("coll_name").find({}).limit(10);
-     console.log("docs: ", docs);
+     console.log("docs: ", JSON.stringify(docs));
      const words = docs.toArray().map(doc => doc.word);
 
     // Calling a function:
