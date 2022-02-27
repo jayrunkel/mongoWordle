@@ -2,6 +2,6 @@
     {
         "name": "searchWord",
         "private": false,
-        "run_as_user_id": "621b9f4b7ea9bbffcf24935c"
+        "run_as_system": true
     }
 ]
