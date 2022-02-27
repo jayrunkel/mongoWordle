@@ -1,1 +1,12 @@
-[]
+[
+    {
+        "route": "/search",
+        "http_method": "POST",
+        "function_name": "searchWord",
+        "validation_method": "NO_VALIDATION",
+        "respond_result": false,
+        "fetch_custom_user_data": true,
+        "create_user_on_auth": true,
+        "disabled": false
+    }
+]
