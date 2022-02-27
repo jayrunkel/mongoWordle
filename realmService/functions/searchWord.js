@@ -21,10 +21,9 @@ exports = async function({ query, headers, body}, response) {
     // var x = context.values.get("value_name");
 
     // Querying a mongodb service:
-     const docCursor = await context.services.get("mongodb-atlas").db("dictionary").collection("ospd").find({}).limit(10);
-     const docArray = docCursor.toArray();
-     console.log("docs: ", JSON.stringify(docArray));
-     const words = docArray.map(doc => doc.word);
+     const docs = await context.services.get("mongodb-atlas").db("dictionary").collection("ospd").find({}).limit(10).toArray();
+     console.log("docs: ", JSON.stringify(docs));
+     const words = docs.map(doc => doc.word);
 
     // Calling a function:
     // const result = context.functions.execute("function_name", arg1, arg2);
