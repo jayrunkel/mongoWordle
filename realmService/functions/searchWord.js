@@ -1,5 +1,5 @@
 // This function is the endpoint's request handler.
-exports = function({ query, headers, body}, response) {
+exports = async function({ query, headers, body}, response) {
     // Data can be extracted from the request as follows:
 
     // Query params, e.g. '?arg1=hello&arg2=world' => {arg1: "hello", arg2: "world"}
@@ -21,9 +21,9 @@ exports = function({ query, headers, body}, response) {
     // var x = context.values.get("value_name");
 
     // Querying a mongodb service:
-     const docs = context.services.get("mongodb-atlas").db("dbname").collection("coll_name").find({}).limit(10).toArray();
+     const docs = await context.services.get("mongodb-atlas").db("dbname").collection("coll_name").find({}).limit(10);
      console.log("docs: ", docs);
-     const words = docs.map(doc => doc.word);
+     const words = docs.toArray().map(doc => doc.word);
 
     // Calling a function:
     // const result = context.functions.execute("function_name", arg1, arg2);
