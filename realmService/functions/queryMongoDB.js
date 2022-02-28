@@ -22,14 +22,14 @@ const config = {
 	resultLimit: 20,
 	mustHaveLetters : searchCriteria.mustHaveLetters ? searchCriteria.mustHaveLetters : [],
 	mustNotHaveLetters : searchCriteria.mustNotHaveLetters ? searchCriteria.mustNotHaveLetters : [],
-	badPositions : argv.badPositions ? argv.badPositions : {
+	badPositions : searchCriteria.badPositions ? searchCriteria.badPositions : {
 		0 : [],
 		1 : [],
 		2 : [],
 		3 : [],
 		4 : []
 	},
-	goodPositions : argv.goodPositions ? argv.goodPositions : {
+	goodPositions : searchCriteria.goodPositions ? searchCriteria.goodPositions : {
 		0 : null,
 		1 : null,
 		2 : null,
