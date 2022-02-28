@@ -28,7 +28,7 @@ exports = async function({ query, headers, body}, response) {
      */
      
   const bodyJson = JSON.parse(reqBody.text());
-	console.log("Request body:", JSON.stringify(bodyJson));
+	console.log("Query body:", JSON.stringify(bodyJson));
     
   const words = context.functions.execute("queryMongoDB", bodyJson);
 
