@@ -15,7 +15,7 @@ exports = async function(regex){
     Try running in the console below.
   */
   
-    const docs = await context.services.get("mongodb-atlas").db("dictionary").collection("ospd").find({word: {$regex : regex}}).limit(10).toArray();
+    const docs = await context.services.get("mongodb-atlas").db("dictionary").collection("ospd").find({word: {$regex : regex}}).limit(20).toArray();
     console.log("docs: ", JSON.stringify(docs));
     const words = docs.map(doc => doc.word);
   
