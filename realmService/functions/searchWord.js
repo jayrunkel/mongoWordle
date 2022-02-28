@@ -3,7 +3,7 @@ exports = async function({ query, headers, body}, response) {
     // Data can be extracted from the request as follows:
 
     // Query params, e.g. '?arg1=hello&arg2=world' => {arg1: "hello", arg2: "world"}
-    const {arg1, arg2} = query;
+//    const {arg1, arg2} = query;
 
     // Headers, e.g. {"Content-Type": ["application/json"]}
     const contentTypes = headers["Content-Type"];
@@ -12,7 +12,7 @@ exports = async function({ query, headers, body}, response) {
     // This is a binary object that can be accessed as a string using .text()
     const reqBody = body;
 
-    console.log("arg1, arg2: ", arg1, arg2);
+//    console.log("arg1, arg2: ", arg1, arg2);
     console.log("Content-Type:", JSON.stringify(contentTypes));
     console.log("Request body:", reqBody);
 
@@ -29,7 +29,7 @@ exports = async function({ query, headers, body}, response) {
      
     const bodyJson = JSON.parse(reqBody.text());
     
-    const words = context.functions.execute("queryMongoDB", bodyJson.regex);
+    const words = context.functions.execute("queryMongoDB", bodyJson);
 
     // Calling a function:
     // const result = context.functions.execute("function_name", arg1, arg2);
