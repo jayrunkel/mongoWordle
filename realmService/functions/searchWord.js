@@ -13,8 +13,8 @@ exports = async function({ query, headers, body}, response) {
     const reqBody = body;
 
 //    console.log("arg1, arg2: ", arg1, arg2);
-    console.log("Content-Type:", JSON.stringify(contentTypes));
-    console.log("Request body:", reqBody);
+  console.log("Content-Type:", JSON.stringify(contentTypes));
+
 
     // You can use 'context' to interact with other Realm features.
     // Accessing a value:
@@ -27,9 +27,10 @@ exports = async function({ query, headers, body}, response) {
      const words = docs.map(doc => doc.word);
      */
      
-    const bodyJson = JSON.parse(reqBody.text());
+  const bodyJson = JSON.parse(reqBody.text());
+	console.log("Request body:", JSON.stringify(bodyJson));
     
-    const words = context.functions.execute("queryMongoDB", bodyJson);
+  const words = context.functions.execute("queryMongoDB", bodyJson);
 
     // Calling a function:
     // const result = context.functions.execute("function_name", arg1, arg2);
