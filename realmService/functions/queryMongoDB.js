@@ -157,24 +157,11 @@ const cleanUpStage = {
 
 	console.log("pipeline: ", pipeline);
 
-async function run() {
-	let client = await connectToDatabase()
-	let db = client.db(config.db)
-	let col = db.collection(config.collection)
-
-
-	console.log(result[0])
-	client.close()
-}
-
-run()
-
-
  
 
   
 //  const docs = await context.services.get("mongodb-atlas").db("dictionary").collection("ospd").find({word: {$regex : regex}}).limit(20).toArray();
-		var result = await col.aggregate(pipeline).toArray()
+		var result = await context.services.get("mongodb-atlas").db("dictionary").collection("ospd").aggregate(pipeline).toArray()
     console.log("result: ", JSON.stringify(result));
 //    const words = docs.map(doc => doc.word);
   
