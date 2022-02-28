@@ -26,8 +26,10 @@ exports = async function({ query, headers, body}, response) {
      console.log("docs: ", JSON.stringify(docs));
      const words = docs.map(doc => doc.word);
      */
+     
+    const bodyJson = JSON.parse(reqBody.text());
     
-    const words = context.functions.execute("queryMongoDB", "^cha");
+    const words = context.functions.execute("queryMongoDB", bodyJson.regex);
 
     // Calling a function:
     // const result = context.functions.execute("function_name", arg1, arg2);
