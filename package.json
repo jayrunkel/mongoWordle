@@ -1,6 +1,7 @@
 {
 	"type": "module",
 	"dependencies": {
-		"mongodb": "^4.3.1"
+		"mongodb": "^4.3.1",
+		"yargs": "^17.3.1"
 	}
 }
