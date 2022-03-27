@@ -3,7 +3,7 @@
 import React from 'react';
 import './index.css';
 //import ReactDOM from 'react-dom';
-
+import * as Realm from "realm-web";
 
 const NUM_GUESSES = 6;
 const WORD_LENGTH = 5;
@@ -70,6 +70,7 @@ class Wordle extends React.Component {
   constructor(props) {
 		super(props);
 		this.state = {
+			user: this.props.user,
 	    guesses: [[]], 
 /* guesses is an array of arrays where each element an object like:			
 			{
@@ -81,8 +82,57 @@ class Wordle extends React.Component {
 	    guessNumber: 0,
 			letterNumber: 0,
 			lastKey: null,
+			suggestedWords : ["no", "guesses", "yet"],
+			totalMatches: 3,
+			matchesShown: 3
 		};
 	}
+
+	async queryMongoDB() {
+
+		let queryObj = {
+			"resultLimit": 20,
+			"mustHaveLetters" : [],
+			"mustNotHaveLetters" : [],
+			"badPositions" : {
+				"0" : [],
+				"1" : [],
+				"2" : [],
+				"3" : [],
+				"4" : []
+			},
+			"goodPositions" : {
+				"0" : null,
+				"1" : null,
+				"2" : null,
+				"3" : null,
+				"4" : null
+			}
+		}
+
+		this.state.guesses.forEach(guess => {
+			guess.forEach((cell, pos) => {
+				const lowLetter = cell.letter.toLowerCase();
+				if (cell.correctPos || cell.inWord) queryObj.mustHaveLetters.push(lowLetter);
+				if (cell.correctPos) queryObj.goodPositions[pos] = lowLetter;
+				if (cell.inWord && !cell.correctPos) queryObj.badPositions[pos].push(lowLetter);
+				if (!cell.correctPos && !cell.inWord) queryObj.mustNotHaveLetters.push(lowLetter);
+			});
+		});
+
+		console.log("Query obj", queryObj);
+
+		const result = await this.state.user.functions.queryMongoDB(queryObj);
+
+		console.log("MongoDB Search Results: ", result[0]);
+
+		this.setState({
+			suggestedWords: result[0].guesses,
+			totalMatches : result[0].count ? result[0].count : 0,
+			matchesShown : Math.min(result[0].resultLimit, result[0].count ? result[0].count : 0)
+		});
+	}
+		
 	
     keyHandler(event) {
 	const curGuessNum = this.state.guessNumber;
@@ -176,26 +226,30 @@ class Wordle extends React.Component {
 */
       return (
 	  <div className="all"  tabIndex="-1" onKeyDown={(e) => this.keyHandler(e)}>
-	      <div className="wordleGame">
-		  <div className="game-board">
+	    <div className="wordleGame">
+				<div className="game-board">
 		      {
-			  this.state.guesses.map((guess, guessNum) => {
-			      return <Row key={guessNum} letters={guess} handleClick={(l) => this.handleClick(guessNum, l)} />;
-			  })
+						this.state.guesses.map((guess, guessNum) => {
+							return <Row key={guessNum} letters={guess} handleClick={(l) => this.handleClick(guessNum, l)} />;
+						})
 		      }
-		  </div>
-	      </div>
-	      <div className="guessSection">
-		  <label>Total Matches: 9999</label>
-		  <label>Matches Shown: 99</label>
-		  <div className="matchList">
-		      <ul>
-			  <li>chaos</li>
-			  <li>chest</li>
-			  <li>chart</li>
-		      </ul>
-		  </div>
-	      </div>
+				</div>
+	    </div>
+	    <div className="guessSection">
+				<div>
+					<button onClick={() => this.queryMongoDB()}>Get Suggestions</button>
+				</div>
+				<div><label>Total Matches:</label>{this.state.totalMatches}</div>
+				<div><label>Matches Shown:</label>{this.state.matchesShown}</div>
+				<div className="matchList">
+					<ul> {
+						this.state.suggestedWords.map((word) => {
+							return <li>{word}</li>;
+						})
+					}
+					</ul>
+				</div>
+	    </div>
 	  </div>
     );
   }

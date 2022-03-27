@@ -192,7 +192,7 @@ function App() {
       <div className="App-header">
         {user ? <UserDetail user={user} /> : <Login setUser={setUser} />}
       </div>
-	{user ? <div><wordle.Wordle /></div> : <div>Not Authorized</div>}
+			{user ? <div><wordle.Wordle user={user} /></div> : <div>Not Authorized</div>}
     </div>
   );
 }
