@@ -155,6 +155,7 @@ const cleanUpStage = {
 
 	const pipeline = [enrichWordsStage, matchStage, facetStage, cleanUpStage];
 
+  console.log("config: ", JSON.stringify(config));
 	console.log("pipeline: ", pipeline);
 
  
