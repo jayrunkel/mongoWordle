@@ -66,3 +66,13 @@ ol, ul {
 .guessSection {
 		display: block;
 }
+
+.gameBoard {
+		
+}
+
+.instructions {
+		margin-left: 50px;
+		width: 500px;
+}
+		

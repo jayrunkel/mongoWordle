@@ -15,7 +15,7 @@ const app = new Realm.App({ id: REALM_APP_ID });
 function UserDetail({ user }) {
   return (
     <div>
-      <h1>Logged in with anonymous id: {user.id}</h1>
+      <b>Ready</b>
     </div>
   );
 }
@@ -190,6 +190,7 @@ function App() {
   return (
     <div className="App">
       <div className="App-header">
+				<h1>Hack Wordle</h1>
         {user ? <UserDetail user={user} /> : <Login setUser={setUser} />}
       </div>
 			{user ? <div><wordle.Wordle user={user} /></div> : <div>Not Authorized</div>}

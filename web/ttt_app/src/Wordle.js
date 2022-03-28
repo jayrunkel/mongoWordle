@@ -227,12 +227,24 @@ class Wordle extends React.Component {
       return (
 	  <div className="all"  tabIndex="-1" onKeyDown={(e) => this.keyHandler(e)}>
 	    <div className="wordleGame">
-				<div className="game-board">
+				<div className="gameBoard">
 		      {
 						this.state.guesses.map((guess, guessNum) => {
 							return <Row key={guessNum} letters={guess} handleClick={(l) => this.handleClick(guessNum, l)} />;
 						})
 		      }
+				</div>
+				<div className="instructions">
+					<h2>Instructions</h2>
+					<ul>
+						<li>Start recreateing the state of your wordle puzzle by clicking on or near the cells</li>
+						<li>If you navigate away from the app, click near the grid to continue editing</li>
+						<li>Typing a letter from a to z will enter that letter in the next cell</li>
+						<li>New rows will be added as you type</li>
+						<li>Delete or backspace will remove the last cell</li>
+						<li>If you mouse click on a cell, the color of the cell will cycle from white - orange - green to specify that the letter is not in the word, the letter is in the wrong position, the letter is in the correct position</li>
+						<li>To get a list of possible guesses for the next row of your wordle puzzle, click "Get Suggestions"</li>
+					</ul>
 				</div>
 	    </div>
 	    <div className="guessSection">
