@@ -19,7 +19,7 @@ const config = {
 	db : "dictionary",
 	collection : "ospd",
 	wordLength: 5,
-	resultLimit: 20,
+	resultLimit: searchCriteria.resultLimit ? searchCriteria.resultLimit: 20,
 	mustHaveLetters : searchCriteria.mustHaveLetters ? searchCriteria.mustHaveLetters : [],
 	mustNotHaveLetters : searchCriteria.mustNotHaveLetters ? searchCriteria.mustNotHaveLetters : [],
 	badPositions : searchCriteria.badPositions ? searchCriteria.badPositions : {

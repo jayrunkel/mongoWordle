@@ -75,4 +75,14 @@ ol, ul {
 		margin-left: 50px;
 		width: 500px;
 }
+
+.matchList {
+		display: flex;
+		flex-direction: row;
+}
+
+.matchList ul {
+		width: 150px;
+		float: left;
+}
 		

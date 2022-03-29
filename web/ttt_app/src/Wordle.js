@@ -5,8 +5,10 @@ import './index.css';
 //import ReactDOM from 'react-dom';
 import * as Realm from "realm-web";
 
-const NUM_GUESSES = 6;
+//const NUM_GUESSES = 6;
 const WORD_LENGTH = 5;
+const MAX_NUMBER_RESULTS = 100;
+const RESULTS_PER_COLUMN = 20;
 
 class LetterSquare extends React.Component {
 
@@ -84,14 +86,16 @@ class Wordle extends React.Component {
 			lastKey: null,
 			suggestedWords : ["no", "guesses", "yet"],
 			totalMatches: 3,
-			matchesShown: 3
+			matchesShown: 3,
+			searching: false,
 		};
 	}
 
 	async queryMongoDB() {
+		this.setState({searching: true});
 
 		let queryObj = {
-			"resultLimit": 20,
+			"resultLimit": MAX_NUMBER_RESULTS,
 			"mustHaveLetters" : [],
 			"mustNotHaveLetters" : [],
 			"badPositions" : {
@@ -129,7 +133,8 @@ class Wordle extends React.Component {
 		this.setState({
 			suggestedWords: result[0].guesses,
 			totalMatches : result[0].count ? result[0].count : 0,
-			matchesShown : Math.min(result[0].resultLimit, result[0].count ? result[0].count : 0)
+			matchesShown : Math.min(result[0].resultLimit, result[0].count ? result[0].count : 0),
+			searching: false
 		});
 	}
 		
@@ -211,20 +216,21 @@ class Wordle extends React.Component {
  
 	}
 
+	generateColumns() {
+		const numColumns = Math.ceil(this.state.matchesShown / RESULTS_PER_COLUMN)
+
+		const columns = []
+
+		for (let i=0; i < numColumns; i++) {
+			columns.push(this.state.suggestedWords.slice(i * RESULTS_PER_COLUMN, i * RESULTS_PER_COLUMN + RESULTS_PER_COLUMN)
+									 .map(word => {return <li>{word}</li>;}));
+		}
+		
+		return columns.map(column => {return <ul>{column}</ul>});
+	}
  
   render() {
-/*	 
-		const history = this.state.history;
-    const current = history[this.state.stepNumber];
-
-    let status;
-
-		const moves = history.map((step, move) => {
-      const desc = move ?
-        'Go to move #' + move :
-        'Go to game start';
-*/
-      return (
+		return (
 	  <div className="all"  tabIndex="-1" onKeyDown={(e) => this.keyHandler(e)}>
 	    <div className="wordleGame">
 				<div className="gameBoard">
@@ -249,17 +255,14 @@ class Wordle extends React.Component {
 	    </div>
 	    <div className="guessSection">
 				<div>
-					<button onClick={() => this.queryMongoDB()}>Get Suggestions</button>
+					{this.state.searching ? <i>searching...</i> : <button onClick={() => this.queryMongoDB()}>Get Suggestions</button>}
 				</div>
 				<div><label>Total Matches:</label>{this.state.totalMatches}</div>
 				<div><label>Matches Shown:</label>{this.state.matchesShown}</div>
 				<div className="matchList">
-					<ul> {
-						this.state.suggestedWords.map((word) => {
-							return <li>{word}</li>;
-						})
+					{
+						this.generateColumns()
 					}
-					</ul>
 				</div>
 	    </div>
 	  </div>
