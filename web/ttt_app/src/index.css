@@ -68,7 +68,7 @@ ol, ul {
 }
 
 .gameBoard {
-		
+		min-width: 165px;
 }
 
 .instructions {
@@ -85,4 +85,7 @@ ol, ul {
 		width: 150px;
 		float: left;
 }
-		
+
+.matchData {
+		margin-top: 10px;
+}

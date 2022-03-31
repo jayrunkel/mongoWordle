@@ -68,6 +68,36 @@ class Row extends React.Component {
   }
 }
 
+// The wordle puzzle is represented by three of the Wordle classes
+// state fields:
+// - guesses
+// - guessNumber
+// - letterNumber
+//
+// guesses is an array of arrays. Each of the inner arrays represents
+// a row in to wordle puzzle. The inner array elements have the
+// following structure:
+//   {
+//			letter: null,
+//			inWord: false,
+//			correctPos: false,
+//		}
+//
+// guessNumber is an index into the row array in the guesses array. It represents the
+// index of the row that has the next empty square
+//
+// letterNumber is an index into the row array identified by
+// guessNumber. It is the index of the next cell in the row array that
+// is open (doesn't have a letter).
+//
+// In this way, the coordingates (guessNumber, letterNumber) point to
+// the next open cell.
+//
+// Note: there is a lot of convoluted logic in the code below to
+// perform array surgery when cell are modified. The code would
+// probably be more readible if some sort of grid class was
+// used/written. 
+
 class Wordle extends React.Component {
   constructor(props) {
 		super(props);
@@ -84,9 +114,9 @@ class Wordle extends React.Component {
 	    guessNumber: 0,
 			letterNumber: 0,
 			lastKey: null,
-			suggestedWords : ["no", "guesses", "yet"],
-			totalMatches: 3,
-			matchesShown: 3,
+			suggestedWords : [],
+			totalMatches: 0,
+			matchesShown: 0,
 			searching: false,
 		};
 	}
@@ -120,7 +150,7 @@ class Wordle extends React.Component {
 				if (cell.correctPos || cell.inWord) queryObj.mustHaveLetters.push(lowLetter);
 				if (cell.correctPos) queryObj.goodPositions[pos] = lowLetter;
 				if (cell.inWord && !cell.correctPos) queryObj.badPositions[pos].push(lowLetter);
-				if (!cell.correctPos && !cell.inWord) queryObj.mustNotHaveLetters.push(lowLetter);
+				if (!cell.correctPos && !cell.inWord && !queryObj.mustHaveLetters.includes(lowLetter)) queryObj.mustNotHaveLetters.push(lowLetter);
 			});
 		});
 
@@ -247,7 +277,7 @@ class Wordle extends React.Component {
 						<li>If you navigate away from the app, click near the grid to continue editing</li>
 						<li>Typing a letter from a to z will enter that letter in the next cell</li>
 						<li>New rows will be added as you type</li>
-						<li>Delete or backspace will remove the last cell</li>
+						<li>Delete or backspace will remove the letter from the last cell</li>
 						<li>If you mouse click on a cell, the color of the cell will cycle from white - orange - green to specify that the letter is not in the word, the letter is in the wrong position, the letter is in the correct position</li>
 						<li>To get a list of possible guesses for the next row of your wordle puzzle, click "Get Suggestions"</li>
 					</ul>
@@ -257,7 +287,7 @@ class Wordle extends React.Component {
 				<div>
 					{this.state.searching ? <i>searching...</i> : <button onClick={() => this.queryMongoDB()}>Get Suggestions</button>}
 				</div>
-				<div><label>Total Matches:</label>{this.state.totalMatches}</div>
+				<div className="matchData"><label>Total Matches:</label>{this.state.totalMatches}</div>
 				<div><label>Matches Shown:</label>{this.state.matchesShown}</div>
 				<div className="matchList">
 					{

@@ -10,6 +10,7 @@ const wordle = require('./Wordle');
 const REALM_APP_ID = "wordleservice-lxqoh";
 const app = new Realm.App({ id: REALM_APP_ID });
 
+//<link rel="icon" href="/assets/images/global/favicon.ico" type="image/x-icon">
 
 // Create a component that displays the given user's details
 function UserDetail({ user }) {
