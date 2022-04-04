@@ -47,13 +47,10 @@ function App() {
   // whenever the current user changes (e.g. logs in or logs out).
   const [user, setUser] = React.useState(app.currentUser);
 
-    const keyHandler = (e) => {
-	console.log("Key press: ", e.key);
-    }
   // If a user is logged in, show their details.
   // Otherwise, show the login screen.
   return (
-      <div className="App" onKeyDown={(e) => keyHandler(e)}>
+      <div className="App">
       <div className="App-header">
 				<h1>Hack Wordle</h1>
         {user ? <UserDetail user={user} /> : <Login setUser={setUser} />}

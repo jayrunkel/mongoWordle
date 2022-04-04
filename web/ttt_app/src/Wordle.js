@@ -12,17 +12,6 @@ const RESULTS_PER_COLUMN = 20;
 
 class LetterSquare extends React.Component {
 
-/*
-	handleClick() {
-		if (this.state.color === "white") {
-			this.setState({color: "orange"});
-		} else if (this.state.color === "orange") {
-			this.setState({color: "green"});
-		} else {
-			this.setState({color: "white"});
-		}
-	}
-*/
 
 	mapMatchToCSS() {
 		let css;
@@ -100,10 +89,10 @@ class Row extends React.Component {
 
 class Wordle extends React.Component {
   constructor(props) {
-      super(props);
-      this.state = {
-	  user: this.props.user,
-	  guesses: [[]], 
+    super(props);
+    this.state = {
+			user: this.props.user,
+			guesses: [[]], 
 /* guesses is an array of arrays where each element an object like:			
 			{
 					letter: null,
@@ -111,14 +100,16 @@ class Wordle extends React.Component {
 					correctPos: false,
 				}
 */
-	  guessNumber: 0,
-	  letterNumber: 0,
-	  lastKey: null,
-	  suggestedWords : [],
-	  totalMatches: 0,
-	  matchesShown: 0,
-	  searching: false,
-      };
+			guessNumber: 0,
+			letterNumber: 0,
+			lastKey: null,
+			suggestedWords : [],
+			totalMatches: 0,
+			matchesShown: 0,
+			searching: false,
+    };
+
+		this.gameBoardRef = React.createRef();
   }
 
 	async queryMongoDB() {
@@ -154,12 +145,12 @@ class Wordle extends React.Component {
 			});
 		});
 
-		console.log("Query obj", queryObj);
+//		console.log("Query obj", queryObj);
 
-	    const result = await this.state.user.functions.queryMongoDB(queryObj);
-	    const resultCount = result[0].count ? result[0].count : 0;
+	  const result = await this.state.user.functions.queryMongoDB(queryObj);
+	  const resultCount = result[0].count ? result[0].count : 0;
 	    
-		console.log("MongoDB Search Results: ", result[0]);
+//		console.log("MongoDB Search Results: ", result[0]);
 
 		this.setState({
 		    suggestedWords: result[0].guesses,
@@ -169,87 +160,102 @@ class Wordle extends React.Component {
 		    guesses : (resultCount > 0 && this.state.letterNumber === 0 && this.state.guesses.length === this.state.guessNumber) ? this.state.guesses.concat([[]]) : this.state.guesses,
 		});
 
+	//	console.log("clicking on gameBoard in query function");
+		//this.gameBoardRef.current.click();
 
 	}
 
-    componentDidMount() {
-	//this.gameBoard.focus();
-	var gameBoard = document.querySelector('div[class="gameBoard"]');
-	console.log("Executing mouse click on mounting game board: ", gameBoard);
-	this.simulateMouseClick(gameBoard);
-    }
+	//On mount, set the focus to the game board so the user can just start typing
+  componentDidMount() {
+		//this.gameBoard.focus();
+		/*
+		var gameBoard = document.querySelector('div[class="gameBoard"]');
+		console.log("Executing mouse click on mounting game board: ", gameBoard);
+		this.simulateMouseClick(gameBoard);
+		*/
+		//this.gameBoardRef.current.click();
+		this.gameBoardRef.current.focus();
+  }
 
-    componentDidUpdate() {
-	//this.gameBoard.focus();
-	var gameBoard = document.querySelector('div[class="gameBoard"]');
-	console.log("Executing mouse click on updating game board: ", gameBoard);
-	this.simulateMouseClick(gameBoard);
-    }
+		//On update, set the focus to the game board so the user can just start typing
+  componentDidUpdate() {
+		//this.gameBoard.focus();
+		/*
+		var gameBoard = document.querySelector('div[class="gameBoard"]');
+		console.log("Executing mouse click on updating game board: ", gameBoard);
+		this.simulateMouseClick(gameBoard);
+		*/
+//		console.log("clicking on gameBoard");
+		this.gameBoardRef.current.focus();
+		//this.gameBoardRef.current.click();
+  }
 
-    simulateMouseClick(element) {
-	const mouseClickEvents = ['mousedown', 'click', 'mouseup'];
-	mouseClickEvents.forEach(mouseEventType => element.dispatchEvent(
+	/*
+  simulateMouseClick(element) {
+		const mouseClickEvents = ['mousedown', 'click', 'mouseup'];
+		mouseClickEvents.forEach(mouseEventType => element.dispatchEvent(
 	    new MouseEvent(mouseEventType, {
-		view: window,
-		bubbles: true,
-		cancelable: true,
-		buttons: 1
+				view: window,
+				bubbles: true,
+				cancelable: true,
+				buttons: 1
 	    })
-	));
-    }
+		));
+  }
+	*/
 
 	
-    keyHandler(event) {
-	const curGuessNum = this.state.guessNumber;
-	const curLetNum = this.state.letterNumber;
-	let previousGuesses;
-	let previousLetters;
-	console.log("Start: curGuessNum: ", curGuessNum, "curLetNum: ", curLetNum);
-	if (event.key.length === 1 && (/[a-zA-Z]/).test(event.key)) {
+  keyHandler(event) {
+		const curGuessNum = this.state.guessNumber;
+		const curLetNum = this.state.letterNumber;
+		let previousGuesses;
+		let previousLetters;
+		console.log("Start: curGuessNum: ", curGuessNum, "curLetNum: ", curLetNum);
+		if (event.key.length === 1 && (/[a-zA-Z]/).test(event.key)) {
 	    console.log("event.key: ", event.key);
 	    const letter = event.key.toUpperCase();
 
 	    previousGuesses = curGuessNum > 0 ? this.state.guesses.slice(0, curGuessNum) : [];
 	    previousLetters = curLetNum > 0 ? this.state.guesses[curGuessNum].slice(0, curLetNum) : [];
 	    const curGuessLetter = {
-		letter: letter,
-		inWord: false,
-		correctPos: false,
+				letter: letter,
+				inWord: false,
+				correctPos: false,
 	    }
 		
 	    const curGuessLetters = previousLetters.concat([curGuessLetter]);
-				
+			
 	    this.setState({
-		guesses : previousGuesses.concat([curGuessLetters]),
-		letterNumber : curLetNum === WORD_LENGTH - 1 ? 0 : curLetNum + 1,
-		guessNumber : curLetNum === WORD_LENGTH - 1 ? curGuessNum + 1 : curGuessNum, 
-		lastKey: letter,
+				guesses : previousGuesses.concat([curGuessLetters]),
+				letterNumber : curLetNum === WORD_LENGTH - 1 ? 0 : curLetNum + 1,
+				guessNumber : curLetNum === WORD_LENGTH - 1 ? curGuessNum + 1 : curGuessNum, 
+				lastKey: letter,
 	    });
-	} else if (event.key === "Delete" || event.key === "Backspace") {
+		} else if (event.key === "Delete" || event.key === "Backspace") {
 	    if (curGuessNum > 0 || curLetNum > 0) {
 
-		if (curGuessNum === 0) {
-		    previousGuesses = [];
-		} else if (curGuessNum === 1) {
-		    previousGuesses = curLetNum === 0 ? []: this.state.guesses.slice(0, curGuessNum)
-		} else {
-		    previousGuesses = curLetNum === 0 ? this.state.guesses.slice(0, curGuessNum - 1) : this.state.guesses.slice(0, curGuessNum);
-		}
+				if (curGuessNum === 0) {
+					previousGuesses = [];
+				} else if (curGuessNum === 1) {
+					previousGuesses = curLetNum === 0 ? []: this.state.guesses.slice(0, curGuessNum)
+				} else {
+					previousGuesses = curLetNum === 0 ? this.state.guesses.slice(0, curGuessNum - 1) : this.state.guesses.slice(0, curGuessNum);
+				}
 
-		previousLetters = curLetNum > 0 ? this.state.guesses[curGuessNum].slice(0, curLetNum - 1) : this.state.guesses[curGuessNum - 1].slice(0, WORD_LENGTH - 1);
+				previousLetters = curLetNum > 0 ? this.state.guesses[curGuessNum].slice(0, curLetNum - 1) : this.state.guesses[curGuessNum - 1].slice(0, WORD_LENGTH - 1);
 
-		console.log("processing request");
-		this.setState({
-		    guesses : previousGuesses.concat([previousLetters]),
-		    letterNumber : curLetNum === 0 ? WORD_LENGTH - 1 : curLetNum - 1,
-		    guessNumber : curLetNum === 0 ? curGuessNum - 1 : curGuessNum, 
-		    lastKey: "Backspace"
-		});
-		console.log("END: curGuessNum: ", this.state.guessNumber, "curLetNum: ", this.state.letterNumber);
+				console.log("processing request");
+				this.setState({
+					guesses : previousGuesses.concat([previousLetters]),
+					letterNumber : curLetNum === 0 ? WORD_LENGTH - 1 : curLetNum - 1,
+					guessNumber : curLetNum === 0 ? curGuessNum - 1 : curGuessNum, 
+					lastKey: "Backspace"
+				});
+				console.log("END: curGuessNum: ", this.state.guessNumber, "curLetNum: ", this.state.letterNumber);
 	    }
 	    event.preventDefault();
-	}
-    }
+		}
+  }
 
   handleClick(clkGuessNum, clkLetterNum) {
 		console.log("clkGuessNum: ", clkGuessNum, " clkLetterNum: ", clkLetterNum);
@@ -291,9 +297,9 @@ class Wordle extends React.Component {
  
   render() {
 		return (
-	  <div className="all"  tabIndex="1" onKeyDown={(e) => this.keyHandler(e)}>
+	  <div className="all"  tabIndex="-1" onKeyDown={(e) => this.keyHandler(e)}>
 	    <div className="wordleGame">
-				<div className="gameBoard" ref={ x => this.gameBoard = x }>
+				<div className="gameBoard" tabIndex="-1" ref={this.gameBoardRef}>
 		      {
 						this.state.guesses.map((guess, guessNum) => {
 							return <Row key={guessNum} letters={guess} handleClick={(l) => this.handleClick(guessNum, l)} />;
@@ -303,8 +309,8 @@ class Wordle extends React.Component {
 				<div className="instructions">
 					<h2>Instructions</h2>
 					<ul>
-						<li>Start recreateing the state of your wordle puzzle by clicking on or near the cells</li>
-						<li>If you navigate away from the app, click near the grid to continue editing</li>
+						<li>Recreate the state of your wordle puzzle. Just start typing.</li>
+						<li>If you navigate away from the app, click near the grid to continue typing. When editing is possible, The grid will be surrounded in a blue border.</li>
 						<li>Typing a letter from a to z will enter that letter in the next cell</li>
 						<li>New rows will be added as you type</li>
 						<li>Delete or backspace will remove the letter from the last cell</li>
@@ -315,7 +321,7 @@ class Wordle extends React.Component {
 	    </div>
 	    <div className="guessSection">
 				<div>
-					{this.state.searching ? <i>searching...</i> : <button onClick={() => this.queryMongoDB()}>Get Suggestions</button>}
+					{this.state.searching ? <i>searching...</i> : <button onClick={async () => await this.queryMongoDB()}>Get Suggestions</button>}
 				</div>
 				<div className="matchData"><label>Total Matches:</label>{this.state.totalMatches}</div>
 				<div><label>Matches Shown:</label>{this.state.matchesShown}</div>
