@@ -170,7 +170,7 @@ class Wordle extends React.Component {
 		//this.gameBoard.focus();
 		/*
 		var gameBoard = document.querySelector('div[class="gameBoard"]');
-		console.log("Executing mouse click on mounting game board: ", gameBoard);
+//		console.log("Executing mouse click on mounting game board: ", gameBoard);
 		this.simulateMouseClick(gameBoard);
 		*/
 		//this.gameBoardRef.current.click();
@@ -182,7 +182,7 @@ class Wordle extends React.Component {
 		//this.gameBoard.focus();
 		/*
 		var gameBoard = document.querySelector('div[class="gameBoard"]');
-		console.log("Executing mouse click on updating game board: ", gameBoard);
+//		console.log("Executing mouse click on updating game board: ", gameBoard);
 		this.simulateMouseClick(gameBoard);
 		*/
 //		console.log("clicking on gameBoard");
@@ -210,9 +210,9 @@ class Wordle extends React.Component {
 		const curLetNum = this.state.letterNumber;
 		let previousGuesses;
 		let previousLetters;
-		console.log("Start: curGuessNum: ", curGuessNum, "curLetNum: ", curLetNum);
+//		console.log("Start: curGuessNum: ", curGuessNum, "curLetNum: ", curLetNum);
 		if (event.key.length === 1 && (/[a-zA-Z]/).test(event.key)) {
-	    console.log("event.key: ", event.key);
+//	    console.log("event.key: ", event.key);
 	    const letter = event.key.toUpperCase();
 
 	    previousGuesses = curGuessNum > 0 ? this.state.guesses.slice(0, curGuessNum) : [];
@@ -244,21 +244,21 @@ class Wordle extends React.Component {
 
 				previousLetters = curLetNum > 0 ? this.state.guesses[curGuessNum].slice(0, curLetNum - 1) : this.state.guesses[curGuessNum - 1].slice(0, WORD_LENGTH - 1);
 
-				console.log("processing request");
+//				console.log("processing request");
 				this.setState({
 					guesses : previousGuesses.concat([previousLetters]),
 					letterNumber : curLetNum === 0 ? WORD_LENGTH - 1 : curLetNum - 1,
 					guessNumber : curLetNum === 0 ? curGuessNum - 1 : curGuessNum, 
 					lastKey: "Backspace"
 				});
-				console.log("END: curGuessNum: ", this.state.guessNumber, "curLetNum: ", this.state.letterNumber);
+//				console.log("END: curGuessNum: ", this.state.guessNumber, "curLetNum: ", this.state.letterNumber);
 	    }
 	    event.preventDefault();
 		}
   }
 
   handleClick(clkGuessNum, clkLetterNum) {
-		console.log("clkGuessNum: ", clkGuessNum, " clkLetterNum: ", clkLetterNum);
+//		console.log("clkGuessNum: ", clkGuessNum, " clkLetterNum: ", clkLetterNum);
 		if (clkGuessNum < this.state.guessNumber || (clkGuessNum === this.state.guessNumber && clkLetterNum < this.state.letterNumber)) {
 			let curBoxDef = this.state.guesses[clkGuessNum][clkLetterNum];
 			let newBoxDef = {
