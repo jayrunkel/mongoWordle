@@ -100,10 +100,10 @@ class Row extends React.Component {
 
 class Wordle extends React.Component {
   constructor(props) {
-		super(props);
-		this.state = {
-			user: this.props.user,
-	    guesses: [[]], 
+      super(props);
+      this.state = {
+	  user: this.props.user,
+	  guesses: [[]], 
 /* guesses is an array of arrays where each element an object like:			
 			{
 					letter: null,
@@ -111,15 +111,15 @@ class Wordle extends React.Component {
 					correctPos: false,
 				}
 */
-	    guessNumber: 0,
-			letterNumber: 0,
-			lastKey: null,
-			suggestedWords : [],
-			totalMatches: 0,
-			matchesShown: 0,
-			searching: false,
-		};
-	}
+	  guessNumber: 0,
+	  letterNumber: 0,
+	  lastKey: null,
+	  suggestedWords : [],
+	  totalMatches: 0,
+	  matchesShown: 0,
+	  searching: false,
+      };
+  }
 
 	async queryMongoDB() {
 		this.setState({searching: true});
@@ -156,18 +156,48 @@ class Wordle extends React.Component {
 
 		console.log("Query obj", queryObj);
 
-		const result = await this.state.user.functions.queryMongoDB(queryObj);
-
+	    const result = await this.state.user.functions.queryMongoDB(queryObj);
+	    const resultCount = result[0].count ? result[0].count : 0;
+	    
 		console.log("MongoDB Search Results: ", result[0]);
 
 		this.setState({
-			suggestedWords: result[0].guesses,
-			totalMatches : result[0].count ? result[0].count : 0,
-			matchesShown : Math.min(result[0].resultLimit, result[0].count ? result[0].count : 0),
-			searching: false
+		    suggestedWords: result[0].guesses,
+		    totalMatches : resultCount,
+		    matchesShown : Math.min(result[0].resultLimit, result[0].count ? result[0].count : 0),
+		    searching: false,
+		    guesses : (resultCount > 0 && this.state.letterNumber === 0 && this.state.guesses.length === this.state.guessNumber) ? this.state.guesses.concat([[]]) : this.state.guesses,
 		});
+
+
 	}
-		
+
+    componentDidMount() {
+	//this.gameBoard.focus();
+	var gameBoard = document.querySelector('div[class="gameBoard"]');
+	console.log("Executing mouse click on mounting game board: ", gameBoard);
+	this.simulateMouseClick(gameBoard);
+    }
+
+    componentDidUpdate() {
+	//this.gameBoard.focus();
+	var gameBoard = document.querySelector('div[class="gameBoard"]');
+	console.log("Executing mouse click on updating game board: ", gameBoard);
+	this.simulateMouseClick(gameBoard);
+    }
+
+    simulateMouseClick(element) {
+	const mouseClickEvents = ['mousedown', 'click', 'mouseup'];
+	mouseClickEvents.forEach(mouseEventType => element.dispatchEvent(
+	    new MouseEvent(mouseEventType, {
+		view: window,
+		bubbles: true,
+		cancelable: true,
+		buttons: 1
+	    })
+	));
+    }
+
 	
     keyHandler(event) {
 	const curGuessNum = this.state.guessNumber;
@@ -253,17 +283,17 @@ class Wordle extends React.Component {
 
 		for (let i=0; i < numColumns; i++) {
 			columns.push(this.state.suggestedWords.slice(i * RESULTS_PER_COLUMN, i * RESULTS_PER_COLUMN + RESULTS_PER_COLUMN)
-									 .map(word => {return <li>{word}</li>;}));
+				     .map((word, idx) => {return <li key={idx}>{word}</li>;}));
 		}
 		
-		return columns.map(column => {return <ul>{column}</ul>});
+	    return columns.map((column, idx) => {return <ul key={idx}>{column}</ul>});
 	}
  
   render() {
 		return (
-	  <div className="all"  tabIndex="-1" onKeyDown={(e) => this.keyHandler(e)}>
+	  <div className="all"  tabIndex="1" onKeyDown={(e) => this.keyHandler(e)}>
 	    <div className="wordleGame">
-				<div className="gameBoard">
+				<div className="gameBoard" ref={ x => this.gameBoard = x }>
 		      {
 						this.state.guesses.map((guess, guessNum) => {
 							return <Row key={guessNum} letters={guess} handleClick={(l) => this.handleClick(guessNum, l)} />;
