@@ -71,6 +71,11 @@ ol, ul {
 		min-width: 165px;
 }
 
+.gameBoard:focus {
+		outline: none;
+		box-shadow: none;
+}
+
 .instructions {
 		margin-left: 50px;
 		width: 500px;

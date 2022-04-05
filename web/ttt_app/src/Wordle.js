@@ -57,6 +57,54 @@ class Row extends React.Component {
   }
 }
 
+class SuggestedWord extends React.Component {
+	constructor(props) {
+		super(props)
+	}
+
+	highlightWord(w) {
+		w.target.style.background = 'green';
+	}
+
+	unHighlightWord(w) {
+		w.target.style.background = 'white';
+	}
+
+	render() {
+
+		return (
+			<ul key={this.props.idx}
+					onClick={() => this.props.handleClick()}
+					onMouseOver={this.highlightWord}
+					onMouseLeave={this.unHighlightWord}
+			>{this.props.word}</ul>
+		)
+	}
+}
+
+class SuggestedColumn extends React.Component {
+  constructor(props) {
+    super(props);
+
+	}
+
+	render() {
+
+		return (
+			<ul key={this.props.idx}>{
+				this.props.wordList.map((word, idx) => {
+					return <SuggestedWord key={idx}
+																idx={idx}
+																word={word}
+																handleClick={() => this.props.handleClick(word)}
+								 />;
+				})
+			}
+			</ul>
+		)
+	}
+}
+
 // The wordle puzzle is represented by three of the Wordle classes
 // state fields:
 // - guesses
@@ -210,7 +258,9 @@ class Wordle extends React.Component {
 		const curLetNum = this.state.letterNumber;
 		let previousGuesses;
 		let previousLetters;
-//		console.log("Start: curGuessNum: ", curGuessNum, "curLetNum: ", curLetNum);
+		//		console.log("Start: curGuessNum: ", curGuessNum, "curLetNum: ", curLetNum);
+
+		// User pressed a letter
 		if (event.key.length === 1 && (/[a-zA-Z]/).test(event.key)) {
 //	    console.log("event.key: ", event.key);
 	    const letter = event.key.toUpperCase();
@@ -254,6 +304,8 @@ class Wordle extends React.Component {
 //				console.log("END: curGuessNum: ", this.state.guessNumber, "curLetNum: ", this.state.letterNumber);
 	    }
 	    event.preventDefault();
+		} else if (event.key === "Enter") {
+			this.queryMongoDB()
 		}
   }
 
@@ -282,17 +334,45 @@ class Wordle extends React.Component {
  
 	}
 
+	handleGuessClick(word) {
+		const curGuessNum = this.state.guessNumber;
+		const curLetNum = this.state.letterNumber;
+		
+		console.log("Selected word was: ", word);
+
+		const previousGuesses = curGuessNum > 0 ? this.state.guesses.slice(0, curGuessNum) : [];
+
+		let newGuessRow = [];
+		for (let i=0; i < word.length; i++) {
+			newGuessRow.push({
+				letter: word.substr(i, 1).toUpperCase(),
+				inWord: false,
+				correctPos: false
+			});
+		}
+
+		this.setState({
+			guesses : previousGuesses.concat([newGuessRow]),
+			guessNumber : curGuessNum + 1,
+			letterNumber: 0,
+		});
+	}
+
 	generateColumns() {
 		const numColumns = Math.ceil(this.state.matchesShown / RESULTS_PER_COLUMN)
 
-		const columns = []
+		let columns = []
 
 		for (let i=0; i < numColumns; i++) {
-			columns.push(this.state.suggestedWords.slice(i * RESULTS_PER_COLUMN, i * RESULTS_PER_COLUMN + RESULTS_PER_COLUMN)
-				     .map((word, idx) => {return <li key={idx}>{word}</li>;}));
+			columns.push(<SuggestedColumn
+										 key={i}
+										 idx={i}
+										 wordList={this.state.suggestedWords.slice(i * RESULTS_PER_COLUMN, i * RESULTS_PER_COLUMN + RESULTS_PER_COLUMN)}
+										 handleClick={(w) => this.handleGuessClick(w)}
+									 />);
 		}
 		
-	    return columns.map((column, idx) => {return <ul key={idx}>{column}</ul>});
+	  return columns;
 	}
  
   render() {
