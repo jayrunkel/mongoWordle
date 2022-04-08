@@ -390,12 +390,12 @@ class Wordle extends React.Component {
 					<h2>Instructions</h2>
 					<ul>
 						<li>Recreate the state of your wordle puzzle. Just start typing.</li>
-						<li>If you navigate away from the app, click near the grid to continue typing. When editing is possible, The grid will be surrounded in a blue border.</li>
 						<li>Typing a letter from a to z will enter that letter in the next cell</li>
 						<li>New rows will be added as you type</li>
 						<li>Delete or backspace will remove the letter from the last cell</li>
 						<li>If you mouse click on a cell, the color of the cell will cycle from white - orange - green to specify that the letter is not in the word, the letter is in the wrong position, the letter is in the correct position</li>
-						<li>To get a list of possible guesses for the next row of your wordle puzzle, click "Get Suggestions"</li>
+						<li>To get a list of possible guesses for the next row of your wordle puzzle, click "Get Suggestions" (or press the return/enter key)</li>
+						<li>Click on a suggested word to enter it into the grid</li>
 					</ul>
 				</div>
 	    </div>
