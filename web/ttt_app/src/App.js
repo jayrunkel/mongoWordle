@@ -1,6 +1,6 @@
 // -*- mode: js-jsx;-*-
 
-import React from 'react';
+import {useState, useEffect } from 'react';
 //import ReactDOM from 'react-dom';
 //import * as Realm from 'realm';
 import * as Realm from "realm-web";
@@ -41,11 +41,23 @@ ReactDOM.render(
 );
 */
 
-
 function App() {
 	// Keep the logged in Realm user in local state. This lets the app re-render
   // whenever the current user changes (e.g. logs in or logs out).
-  const [user, setUser] = React.useState(app.currentUser);
+  const [user, setUser] = useState(app.currentUser);
+
+	useEffect(() => {
+
+		async function login() {
+			const user = await app.logIn(Realm.Credentials.anonymous());
+			setUser(user);
+		}
+		
+		if (!user) {
+			login();
+		}
+
+	}, [])
 
   // If a user is logged in, show their details.
   // Otherwise, show the login screen.
@@ -53,11 +65,13 @@ function App() {
       <div className="App">
       <div className="App-header">
 				<h1>Hack Wordle</h1>
-        {user ? <UserDetail user={user} /> : <Login setUser={setUser} />}
       </div>
-			{user ? <div><wordle.Wordle user={user} /></div> : <div>Not Authorized</div>}
+			{user ? <div><wordle.Wordle user={user} /></div> : <div>Authenticating...</div>}
     </div>
   );
 }
 
 export default App;
+
+//          {user ? <UserDetail user={user} /> : <Login setUser={setUser} />}
+

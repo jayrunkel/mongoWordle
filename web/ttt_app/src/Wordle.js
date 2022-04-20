@@ -1,9 +1,19 @@
 // -*- mode: js-jsx;-*-
 
+// ================================================================
+// TODO:
+// 1. Header on each file
+// 2. Show/hide instructions
+// 3. Auto login, if necessary, with no button
+// 4. Material design look and feel
+// ================================================================
+
+
 import React from 'react';
 import './index.css';
 //import ReactDOM from 'react-dom';
-import * as Realm from "realm-web";
+//import * as Realm from "realm-web";
+import Lodash from 'lodash';
 
 //const NUM_GUESSES = 6;
 const WORD_LENGTH = 5;
@@ -58,9 +68,6 @@ class Row extends React.Component {
 }
 
 class SuggestedWord extends React.Component {
-	constructor(props) {
-		super(props)
-	}
 
 	highlightWord(w) {
 		w.target.style.background = 'green';
@@ -83,10 +90,6 @@ class SuggestedWord extends React.Component {
 }
 
 class SuggestedColumn extends React.Component {
-  constructor(props) {
-    super(props);
-
-	}
 
 	render() {
 
@@ -252,6 +255,26 @@ class Wordle extends React.Component {
   }
 	*/
 
+  getNewLetterColor (curGuessNum, curLetNum, letter) {
+		let curGuessLetObj = {
+			letter: letter,
+			inWord: false,
+			correctPos: false,
+	  };
+
+		console.log("[getNewLetterColor] # of guesses: ", this.state.guesses.length, "curGuessNum: ", curGuessNum, " curLetNum: ", curLetNum, " curGuessLetObj: ", curGuessLetObj);
+		for (let row = 0; row < curGuessNum; row++) {
+			if (this.state.guesses[row][curLetNum].letter === letter) {
+				curGuessLetObj.inWord = this.state.guesses[row][curLetNum].inWord;
+				curGuessLetObj.correctPos = this.state.guesses[row][curLetNum].correctPos;
+				console.log("[getNewLetterColor] setting letter color");
+				break;
+			}
+		}
+
+
+		return curGuessLetObj;
+	}
 	
   keyHandler(event) {
 		const curGuessNum = this.state.guessNumber;
@@ -267,12 +290,14 @@ class Wordle extends React.Component {
 
 	    previousGuesses = curGuessNum > 0 ? this.state.guesses.slice(0, curGuessNum) : [];
 	    previousLetters = curLetNum > 0 ? this.state.guesses[curGuessNum].slice(0, curLetNum) : [];
-	    const curGuessLetter = {
+	    const curGuessLetter = this.getNewLetterColor(curGuessNum, curLetNum, letter);
+/*						
+						{
 				letter: letter,
 				inWord: false,
 				correctPos: false,
 	    }
-		
+*/		
 	    const curGuessLetters = previousLetters.concat([curGuessLetter]);
 			
 	    this.setState({
@@ -309,6 +334,31 @@ class Wordle extends React.Component {
 		}
   }
 
+	// ================================================================
+	// colorColumnsSimilarly
+	// 
+	//if a letter in one row is:
+	// - changed from yellow to green - then any other instances of the letter in the same column (across all guesses) should be changed from yellow to green
+	// - changed from green to white - then any other instances of the same letter in the same column should be changed from green to white.
+	//   (TODO: Consider changing all instances of the letter to white)
+	// - white to yellow - TODO: consider changing all instances of the letter, where the letter is unique in the row, to white
+	
+	colorColumnsSimilarly(guesses, newBoxDef, clkLetNum) {
+
+		let newGuesses = Lodash.cloneDeep(guesses);
+
+		guesses.forEach((guessRow, rowNum) => {
+			if (guessRow[clkLetNum] && (guessRow[clkLetNum].letter === newBoxDef.letter)) {
+//					if (newBoxDef.correctPos || (!newBoxDef.inWord && !newBoxDef.correctPos)) {	// yellow to green || green to white
+						newGuesses[rowNum][clkLetNum].inWord = newBoxDef.inWord;
+						newGuesses[rowNum][clkLetNum].correctPos = newBoxDef.correctPos;
+					//					}
+				}
+		});
+
+		return newGuesses;
+	}
+
   handleClick(clkGuessNum, clkLetterNum) {
 //		console.log("clkGuessNum: ", clkGuessNum, " clkLetterNum: ", clkLetterNum);
 		if (clkGuessNum < this.state.guessNumber || (clkGuessNum === this.state.guessNumber && clkLetterNum < this.state.letterNumber)) {
@@ -327,7 +377,7 @@ class Wordle extends React.Component {
 			const newLetters = previousLetters.concat([newBoxDef], followingLetters);
 			
 			this.setState({
-				guesses: previousGuesses.concat([newLetters], followingGuesses)
+				guesses: this.colorColumnsSimilarly(previousGuesses.concat([newLetters], followingGuesses), newBoxDef, clkLetterNum)
 			});
 
 		}
@@ -336,7 +386,6 @@ class Wordle extends React.Component {
 
 	handleGuessClick(word) {
 		const curGuessNum = this.state.guessNumber;
-		const curLetNum = this.state.letterNumber;
 		
 		console.log("Selected word was: ", word);
 
