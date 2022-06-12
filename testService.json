@@ -1,0 +1,7 @@
+{
+  "resultLimit": 20,
+  "mustHaveLetters": [ "c", "r", "a", "e" ],
+  "mustNotHaveLetters": [ "n" ],
+  "badPositions": { "0": [ "c" ], "1": [ "r" ], "2": [], "3": [], "4": [] },
+  "goodPositions": { "0": null, "1": null, "2": "a", "3": null, "4": "e" }
+}
