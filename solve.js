@@ -1,4 +1,16 @@
 
+// ================================================================
+// Execution Instructions
+//
+/*
+node solve.js \
+  --mustHaveLetters='["c","r","a","e"]'  \
+  --mustNotHaveLetters='["n"]' \
+  --goodPositions='{"0":null, "1":null, "2":"a", "3":null, "4":"e"}' \
+  --badPositions='{"0":["c"], "1":["r"], "2":[], "3":[], "4":[]}' \
+  --uri="mongodb+srv://realmcluster.aamtz.mongodb.net"
+*/
+
 import  yargs from "yargs" // "yargs/yargs"
 import { MongoClient } from "mongodb";
 import { hideBin } from 'yargs/helpers'
@@ -156,7 +168,7 @@ const cleanUpStage = {
 
 const pipeline = [enrichWordsStage, matchStage, facetStage, cleanUpStage]
 
-console.log(pipeline)
+console.log(JSON.stringify(pipeline, null, 2));
 
 async function run() {
 	let client = await connectToDatabase()
